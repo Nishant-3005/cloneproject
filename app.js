@@ -1,3 +1,6 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 if(process.env.NODE_ENV !=="production"){
 require('dotenv').config();
 
@@ -11,8 +14,8 @@ const Listing=require("./models/listing.js")
 const path=require("path");
 const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");
-const MONGO_URL="mongodb://127.0.0.1:27017/wanderlust";
-// const dbUrl = process.env.ATLASDB_URL;
+// const MONGO_URL="mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL = process.env.ATLASDB_URL;
 const wrapAsync=require("./utils/wrapAsync.js")
 const ExpressError =require("./utils/ExpressError.js")
 const {listingSchema ,reviewSchema}=require("./schema.js");
@@ -34,6 +37,7 @@ main().then(()=>{
     console.log(err);
 });
 async function main(){
+    // console.log("MONGO_URL =", JSON.stringify(MONGO_URL));
     await mongoose.connect(MONGO_URL);
 }
 
@@ -92,20 +96,6 @@ app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
 
 
-
-
-// app.get("/testListing", async (req, res) => {
-//   let sampleListing = new Listing({
-//     title: "My New Villa",
-//     description: "By the beach",
-//     price: 1200,
-//     location: "Calangute, Goa",
-//     country: "India",
-//   });
-//    await sampleListing.save();
-// console.log("sample saved");
-// res.send("successfully");
-// });
 
 app.all("/{*splat}",(req,res,next)=>{
      next(new ExpressError(404,"page not found"));
